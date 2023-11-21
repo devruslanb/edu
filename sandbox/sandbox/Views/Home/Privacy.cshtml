@@ -1,6 +1,42 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Фоновые задачи";
 }
 <h1>@ViewData["Title"]</h1>
 
 <p>Use this page to detail your site's privacy policy.</p>
+
+<button id="startTaskButton">Start Task</button>
+<div id="progressBarContainer">
+    <div id="progressBar" style="width:0%;height:20px;background-color:blue;"></div>
+</div>
+<script>
+document.getElementById('startTaskButton').addEventListener('click', function() {
+startTask();
+});
+
+function startTask() {
+fetch('/api/tasks', { method: 'POST' })
+.then(response => response.json())
+.then(data => {
+const taskId = data.taskId;
+pollTaskProgress(taskId);
+});
+}
+
+function pollTaskProgress(taskId) {
+    const intervalId = setInterval(() => {
+        fetch(`/api/tasks/${taskId}/progress`)
+        .then(response => response.json())
+        .then(data => {
+            const progress = data.progress;
+            const progressBar = document.getElementById("progressBar");
+            progressBar.style.width = progress + "%";
+
+            if (progress >= 100) {
+            clearInterval(intervalId); // Задача завершена
+        }
+    });
+    }, 1000); // Опрашивать прогресс каждую секунду
+}
+
+</script>

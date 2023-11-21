@@ -9,10 +9,10 @@ COPY ["sandbox/sandbox.csproj", "sandbox/"]
 RUN dotnet restore "sandbox/sandbox.csproj"
 COPY . .
 WORKDIR "/src/sandbox"
-RUN dotnet build "sandbox.csproj" -c Release -o /app/build
+RUN dotnet build "sandbox.csproj" -c Debug -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "sandbox.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "sandbox.csproj" -c Debug -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
